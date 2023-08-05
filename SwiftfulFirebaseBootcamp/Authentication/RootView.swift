@@ -10,16 +10,17 @@ import SwiftUI
 struct RootView: View {
     
     @State private var isShowingSignInView: Bool = false
-    
-    private let authManager: AuthenticationManager
-    init(authManager: AuthenticationManager = .shared) {
-        self.authManager = authManager
-    }
+    @EnvironmentObject private var authManager: AuthenticationManager
     
     var body: some View {
         ZStack {
-            NavigationStack {
-                SettingsView(isShowingSignInView: $isShowingSignInView)
+            if !isShowingSignInView {
+                NavigationStack {
+                    SettingsView(
+                        isShowingSignInView: $isShowingSignInView,
+                        viewModel: SettingsViewModel(authManager: authManager)
+                    )
+                }
             }
         }
         .onAppear {
@@ -28,7 +29,10 @@ struct RootView: View {
         }
         .fullScreenCover(isPresented: $isShowingSignInView) {
             NavigationStack {
-                AuthenticationView(isShowingSignInView: $isShowingSignInView)
+                AuthenticationView(
+                    isShowingSignInView: $isShowingSignInView,
+                    viewModel: AuthenticationViewModel(authManager: authManager)
+                )
             }
         }
     }
@@ -37,5 +41,6 @@ struct RootView: View {
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         RootView()
+            .environmentObject(AuthenticationManager())
     }
 }

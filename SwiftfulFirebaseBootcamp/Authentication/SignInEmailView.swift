@@ -14,7 +14,7 @@ final class SignInEmailViewModel: ObservableObject {
     @Published var password = ""
     private let authManager: AuthenticationManager
     
-    init(authManager: AuthenticationManager = .shared) {
+    init(authManager: AuthenticationManager) {
         self.authManager = authManager
     }
     
@@ -37,8 +37,13 @@ final class SignInEmailViewModel: ObservableObject {
 
 struct SignInEmailView: View {
     
-    @StateObject private var viewModel = SignInEmailViewModel()
     @Binding var isShowingSignInView: Bool
+    @StateObject private var viewModel: SignInEmailViewModel
+    
+    init(isShowingSignInView: Binding<Bool>, viewModel: SignInEmailViewModel) {
+        self._isShowingSignInView = isShowingSignInView
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         VStack {
@@ -91,7 +96,10 @@ struct SignInEmailView: View {
 struct SignInEmailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SignInEmailView(isShowingSignInView: .constant(false))
+            SignInEmailView(
+                isShowingSignInView: .constant(false),
+                viewModel: SignInEmailViewModel(authManager: .init())
+            )
         }
     }
 }

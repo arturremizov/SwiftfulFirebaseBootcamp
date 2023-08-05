@@ -10,9 +10,17 @@ import SwiftUI
 @MainActor
 final class SettingsViewModel: ObservableObject {
     
+    @Published var authProviders: [AuthProviderOption] = []
+    
     private let authManager: AuthenticationManager
-    init(authManager: AuthenticationManager = .shared) {
+    init(authManager: AuthenticationManager) {
         self.authManager = authManager
+    }
+    
+    func loadAuthProviders() {
+        if let authProviders = try? authManager.getProviders() {
+            self.authProviders = authProviders
+        }
     }
     
     func signOut() throws {
@@ -40,8 +48,13 @@ final class SettingsViewModel: ObservableObject {
 
 struct SettingsView: View {
     
-    @StateObject private var viewModel = SettingsViewModel()
     @Binding var isShowingSignInView: Bool
+    @StateObject private var viewModel: SettingsViewModel
+    
+    init(isShowingSignInView: Binding<Bool>, viewModel: SettingsViewModel) {
+        self._isShowingSignInView = isShowingSignInView
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         List {
@@ -56,7 +69,12 @@ struct SettingsView: View {
                 }
             }
             
-            emailSection
+            if viewModel.authProviders.contains(.email) {
+                emailSection
+            }
+        }
+        .onAppear {
+            viewModel.loadAuthProviders()
         }
         .navigationTitle("Settings")
     }
@@ -65,7 +83,10 @@ struct SettingsView: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SettingsView(isShowingSignInView: .constant(false))
+            SettingsView(
+                isShowingSignInView: .constant(false),
+                viewModel: SettingsViewModel(authManager: .init())
+            )
         }
     }
 }
