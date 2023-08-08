@@ -23,6 +23,7 @@ struct AuthDataResultModel {
 enum AuthProviderOption: String {
     case email = "password"
     case google = "google.com"
+    case apple = "apple.com"
 }
 
 final class AuthenticationManager: ObservableObject {
@@ -91,6 +92,12 @@ extension AuthenticationManager {
     @discardableResult
     func signInWithGoogle(idToken: String, accessToken: String) async throws -> AuthDataResultModel {
         let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+        return try await signIn(with: credential)
+    }
+    
+    @discardableResult
+    func signInWithApple(idToken: String, nonce: String, fullName: PersonNameComponents?) async throws -> AuthDataResultModel {
+        let credential = OAuthProvider.appleCredential(withIDToken: idToken, rawNonce: nonce, fullName: fullName)
         return try await signIn(with: credential)
     }
     

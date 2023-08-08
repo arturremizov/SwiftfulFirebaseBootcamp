@@ -20,6 +20,12 @@ final class AuthenticationViewModel: ObservableObject {
         let tokens = try await SignInGoogleHelper.signIn()
         try await authManager.signInWithGoogle(idToken: tokens.idToken, accessToken: tokens.accessToken)
     }
+    
+    func signInApple() async throws {
+        let helper = SignInAppleHelper()
+        let authResult = try await helper.startSignInWithAppleFlow()
+        try await authManager.signInWithApple(idToken: authResult.idTokenString, nonce: authResult.nonce, fullName: authResult.fullName)
+    }
 }
 
 struct AuthenticationView: View {
@@ -50,16 +56,13 @@ struct AuthenticationView: View {
                     .cornerRadius(10, antialiased: true)
             }
 
-            GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .dark, style: .wide, state: .normal)) {
-                Task {
-                    do {
-                        try await viewModel.signInGoogle()
-                        isShowingSignInView = false
-                    } catch {
-                        print(error)
-                    }
-                }
-            }
+            GoogleSignInButton(
+                viewModel: GoogleSignInButtonViewModel(scheme: .dark, style: .wide, state: .normal),
+                action: signInGoogle
+            )
+            
+            SignInWithAppleButton(type: .default, style: .black, action: signInApple)
+                .frame(height: 55)
             
             Spacer()
         }
@@ -77,5 +80,31 @@ struct AuthenticationView_Previews: PreviewProvider {
             )
         }
         .environmentObject(AuthenticationManager())
+    }
+}
+
+// MARK: - Methods
+extension AuthenticationView {
+    
+    private func signInGoogle() {
+        Task {
+            do {
+                try await viewModel.signInGoogle()
+                isShowingSignInView = false
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    private func signInApple() {
+        Task {
+            do {
+                try await viewModel.signInApple()
+                isShowingSignInView = false
+            } catch {
+                print(error)
+            }
+        }
     }
 }
