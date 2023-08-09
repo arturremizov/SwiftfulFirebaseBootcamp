@@ -26,6 +26,10 @@ final class AuthenticationViewModel: ObservableObject {
         let authResult = try await helper.startSignInWithAppleFlow()
         try await authManager.signInWithApple(idToken: authResult.idTokenString, nonce: authResult.nonce, fullName: authResult.fullName)
     }
+    
+    func signInAnonymous() async throws {
+        try await authManager.signInAnonymously()
+    }
 }
 
 struct AuthenticationView: View {
@@ -41,6 +45,18 @@ struct AuthenticationView: View {
     
     var body: some View {
         VStack {
+            Button {
+                signInAnonymously()
+            } label: {
+                Text("Sign In Anonymously")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 55)
+                    .background(.orange)
+                    .cornerRadius(10, antialiased: true)
+            }
+            
             NavigationLink {
                 SignInEmailView(
                     isShowingSignInView: $isShowingSignInView,
@@ -85,6 +101,17 @@ struct AuthenticationView_Previews: PreviewProvider {
 
 // MARK: - Methods
 extension AuthenticationView {
+    
+    private func signInAnonymously() {
+        Task {
+            do {
+                try await viewModel.signInAnonymous()
+                isShowingSignInView = false
+            } catch {
+                print(error)
+            }
+        }
+    }
     
     private func signInGoogle() {
         Task {
