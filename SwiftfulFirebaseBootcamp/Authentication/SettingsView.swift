@@ -32,6 +32,10 @@ final class SettingsViewModel: ObservableObject {
         try authManager.signOut()
     }
     
+    func deleteAccount() async throws {
+        try await authManager.deleteUser()
+    }
+    
     func resetPassword() async throws {
         let user = try authManager.getAuthenticatedUser()
         guard let email = user.email else {
@@ -89,6 +93,19 @@ struct SettingsView: View {
                         print(error)
                     }
                 }
+            }
+            
+            Button(role: .destructive) {
+                Task {
+                    do {
+                        try await viewModel.deleteAccount()
+                        isShowingSignInView = true
+                    } catch {
+                        print(error)
+                    }
+                }
+            } label: {
+                Text("Delete account")
             }
             
             if viewModel.authProviders.contains(.email) {
