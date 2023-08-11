@@ -7,34 +7,6 @@
 
 import SwiftUI
 
-@MainActor
-final class SignInEmailViewModel: ObservableObject {
-    
-    @Published var email = ""
-    @Published var password = ""
-    private let authManager: AuthenticationManager
-    
-    init(authManager: AuthenticationManager) {
-        self.authManager = authManager
-    }
-    
-    func signUp() async throws {
-        guard !email.isEmpty, !password.isEmpty else {
-            print("No email or password found.")
-            return
-        }
-        try await authManager.createUser(email: email, password: password)
-    }
-    
-    func signIn() async throws {
-        guard !email.isEmpty, !password.isEmpty else {
-            print("No email or password found.")
-            return
-        }
-        try await authManager.signInUser(email: email, password: password)
-    }
-}
-
 struct SignInEmailView: View {
     
     @Binding var isShowingSignInView: Bool
@@ -98,7 +70,7 @@ struct SignInEmailView_Previews: PreviewProvider {
         NavigationStack {
             SignInEmailView(
                 isShowingSignInView: .constant(false),
-                viewModel: SignInEmailViewModel(authManager: .init())
+                viewModel: SignInEmailViewModel(authManager: .init(), userManager: .init())
             )
         }
     }

@@ -8,41 +8,13 @@
 import SwiftUI
 import GoogleSignInSwift
 
-@MainActor
-final class AuthenticationViewModel: ObservableObject {
-    
-    private let authManager: AuthenticationManager
-    init(authManager: AuthenticationManager) {
-        self.authManager = authManager
-    }
-    
-    func signInGoogle() async throws {
-        let tokens = try await SignInGoogleHelper.signIn()
-        try await authManager.signInWithGoogle(idToken: tokens.idToken, accessToken: tokens.accessToken)
-    }
-    
-    func signInApple() async throws {
-        let helper = SignInAppleHelper()
-        let authResult = try await helper.startSignInWithAppleFlow()
-        try await authManager.signInWithApple(idToken: authResult.idTokenString, nonce: authResult.nonce, fullName: authResult.fullName)
-    }
-    
-    func signInAnonymous() async throws {
-        try await authManager.signInAnonymously()
-    }
-}
-
 struct AuthenticationView: View {
     
     @Binding var isShowingSignInView: Bool
-    @StateObject private var viewModel: AuthenticationViewModel
+    @StateObject var viewModel: AuthenticationViewModel
     @EnvironmentObject private var authManager: AuthenticationManager
+    @EnvironmentObject private var userManager: UserManager
 
-    init(isShowingSignInView: Binding<Bool>, viewModel: AuthenticationViewModel) {
-        self._isShowingSignInView = isShowingSignInView
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
-    
     var body: some View {
         VStack {
             Button {
@@ -60,7 +32,7 @@ struct AuthenticationView: View {
             NavigationLink {
                 SignInEmailView(
                     isShowingSignInView: $isShowingSignInView,
-                    viewModel: SignInEmailViewModel(authManager: authManager)
+                    viewModel: SignInEmailViewModel(authManager: authManager, userManager: userManager)
                 )
             } label: {
                 Text("Sign In with Email")
@@ -92,10 +64,12 @@ struct AuthenticationView_Previews: PreviewProvider {
         NavigationStack {
             AuthenticationView(
                 isShowingSignInView: .constant(false),
-                viewModel: AuthenticationViewModel(authManager: .init())
+                viewModel: AuthenticationViewModel(authManager: .init(), userManager: .init())
             )
         }
         .environmentObject(AuthenticationManager())
+        .environmentObject(UserManager())
+
     }
 }
 

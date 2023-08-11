@@ -13,12 +13,15 @@ import GoogleSignIn
 struct SwiftfulFirebaseBootcampApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject var authManager = AuthenticationManager()
     
+    @StateObject var authManager = AuthenticationManager()
+    @StateObject var userManager = UserManager()
+
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(authManager)
+                .environmentObject(userManager)
         }
     }
 }
