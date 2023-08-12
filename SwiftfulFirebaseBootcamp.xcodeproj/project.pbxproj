@@ -91,8 +91,7 @@
 				AF79DBD52A7C0FB700081627 /* SettingsView.swift */,
 				AF1A2DA92A8675AC00A6B906 /* SettingsViewModel.swift */,
 			);
-			name = Settings;
-			path = "New Group";
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		AF1A2DAB2A8675E300A6B906 /* Authentication */ = {

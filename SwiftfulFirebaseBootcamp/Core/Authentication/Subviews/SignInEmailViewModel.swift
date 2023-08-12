@@ -25,8 +25,9 @@ final class SignInEmailViewModel: ObservableObject {
             print("No email or password found.")
             return
         }
-        let user = try await authManager.createUser(email: email, password: password)
-        try await userManager.createNewUser(authUser: user)
+        let authUser = try await authManager.createUser(email: email, password: password)
+        let appUser = AppUser(authUser: authUser)
+        try await userManager.createNewUser(appUser)
     }
     
     func signIn() async throws {

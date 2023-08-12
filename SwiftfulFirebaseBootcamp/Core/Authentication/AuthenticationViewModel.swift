@@ -19,19 +19,22 @@ final class AuthenticationViewModel: ObservableObject {
     
     func signInGoogle() async throws {
         let tokens = try await SignInGoogleHelper.signIn()
-        let user = try await authManager.signInWithGoogle(idToken: tokens.idToken, accessToken: tokens.accessToken)
-        try await userManager.createNewUser(authUser: user)
+        let authUser = try await authManager.signInWithGoogle(idToken: tokens.idToken, accessToken: tokens.accessToken)
+        let appUser = AppUser(authUser: authUser)
+        try await userManager.createNewUser(appUser)
     }
     
     func signInApple() async throws {
         let helper = SignInAppleHelper()
         let authResult = try await helper.startSignInWithAppleFlow()
-        let user = try await authManager.signInWithApple(idToken: authResult.idTokenString, nonce: authResult.nonce, fullName: authResult.fullName)
-        try await userManager.createNewUser(authUser: user)
+        let authUser = try await authManager.signInWithApple(idToken: authResult.idTokenString, nonce: authResult.nonce, fullName: authResult.fullName)
+        let appUser = AppUser(authUser: authUser)
+        try await userManager.createNewUser(appUser)
     }
     
     func signInAnonymous() async throws {
-        let user = try await authManager.signInAnonymously()
-        try await userManager.createNewUser(authUser: user)
+        let authUser = try await authManager.signInAnonymously()
+        let appUser = AppUser(authUser: authUser)
+        try await userManager.createNewUser(appUser)
     }
 }
