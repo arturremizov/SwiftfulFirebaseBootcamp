@@ -9,6 +9,12 @@ import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
+struct Movie: Codable {
+    let id: String
+    let title: String
+    let isPopular: Bool
+}
+
 struct AppUser: Codable {
     let userId: String
     let isAnonymous: Bool
@@ -16,14 +22,18 @@ struct AppUser: Codable {
     let photoUrl: String?
     let dateCreated: Date
     let isPremium: Bool?
+    let preferences: [String]?
+    let favoriteMovie: Movie?
     
-    init(userId: String, isAnonymous: Bool, email: String? = nil, photoUrl: String? = nil, dateCreated: Date, isPremium: Bool? = nil) {
+    init(userId: String, isAnonymous: Bool, email: String? = nil, photoUrl: String? = nil, dateCreated: Date, isPremium: Bool? = nil, preferences: [String]? = nil, favoriteMovie: Movie? = nil) {
         self.userId = userId
         self.isAnonymous = isAnonymous
         self.email = email
         self.photoUrl = photoUrl
         self.dateCreated = dateCreated
         self.isPremium = isPremium
+        self.preferences = preferences
+        self.favoriteMovie = favoriteMovie
     }
     
     init(authUser: AuthUser) {
@@ -33,15 +43,8 @@ struct AppUser: Codable {
         self.photoUrl = authUser.photoUrl
         self.dateCreated = Timestamp().dateValue()
         self.isPremium = false
-    }
-    
-    enum CodingKeys: CodingKey {
-        case userId
-        case isAnonymous
-        case email
-        case photoUrl
-        case dateCreated
-        case isPremium
+        self.preferences = nil
+        self.favoriteMovie = nil
     }
 }
 
@@ -71,6 +74,34 @@ final class UserManager: ObservableObject {
     
     func updateUserPremiumStatus(userId: String, isPremium: Bool) async throws {
         try await userDocument(userId: userId).updateData(["is_premium": isPremium])
+    }
+    
+    func addUserPreference(userId: String, preference: String) async throws {
+        let data: [String: Any] = [
+            "preferences": FieldValue.arrayUnion([preference])
+        ]
+        try await userDocument(userId: userId).updateData(data)
+    }
+    
+    func removeUserPreference(userId: String, preference: String) async throws {
+        let data: [String: Any] = [
+            "preferences": FieldValue.arrayRemove([preference])
+        ]
+        try await userDocument(userId: userId).updateData(data)
+    }
+    
+    func addFavoriteMovie(userId: String, movie: Movie) async throws {
+        let data: [String: Any] = [
+            "favorite_movie": try encoder.encode(movie)
+        ]
+        try await userDocument(userId: userId).updateData(data)
+    }
+    
+    func removeFavoriteMovie(userId: String) async throws {
+        let data: [String: Any?] = [
+            "favorite_movie": nil
+        ]
+        try await userDocument(userId: userId).updateData(data as [AnyHashable : Any])
     }
     
     // MARK: - Helpers
