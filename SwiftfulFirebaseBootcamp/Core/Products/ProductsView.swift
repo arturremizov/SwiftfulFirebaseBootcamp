@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 @MainActor
 final class ProductsViewModel: ObservableObject {
@@ -47,36 +48,60 @@ final class ProductsViewModel: ObservableObject {
     @Published var selectedSortOption: SortOption = .none
     @Published var selectedCategory: CategoryOption = .none
 
+    private var lastDocument: DocumentSnapshot? = nil
+    private(set) var isFetchingProducts: Bool = false
+    
     private let productsManager: ProductsManager
     init(productsManager: ProductsManager) {
         self.productsManager = productsManager
     }
     
-    func getAllProducts() async throws {
-        self.products = try await productsManager.getAllProducts()
+    func getProducts() async throws {
+        isFetchingProducts = true
+        try await filterProducts(by: selectedCategory, sortBy: selectedSortOption)
+        isFetchingProducts = false
+
     }
     
     func sortProducts(_ sortOption: SortOption) async throws {
         self.selectedSortOption = sortOption
-        try await filterProducts(by: selectedCategory, sortBy: sortOption)
+        self.products.removeAll()
+        self.lastDocument = nil
+        try await getProducts()
     }
     
     func filterProducts(by categoryOption: CategoryOption) async throws {
         self.selectedCategory = categoryOption
-        try await filterProducts(by: categoryOption, sortBy: selectedSortOption)
+        self.products.removeAll()
+        self.lastDocument = nil
+        try await getProducts()
     }
     
     private func filterProducts(by category: CategoryOption, sortBy sortOption: SortOption) async throws {
-        if let categoryId = category.id, let isPriceDescending = sortOption.isPriceDescending {
-            self.products = try await productsManager.getAllProductsSortedByPriceFor(category: categoryId, descending: isPriceDescending)
-        } else if let categoryId = category.id {
-            self.products = try await productsManager.getAllProductsFor(category: categoryId)
-        } else if let isPriceDescending = sortOption.isPriceDescending {
-            self.products = try await productsManager.getAllProductsSortedByPrice(descending: isPriceDescending)
-        } else {
-            self.products = try await productsManager.getAllProducts()
+        var filter: ProductsManager.Filter? = nil
+        var sorter: ProductsManager.Sorter? = nil
+        if let categoryId = category.id {
+            filter = .isEqualTo(field: "category", value: categoryId)
+        }
+        if let isPriceDescending = sortOption.isPriceDescending {
+            sorter = .order(by: "price", descending: isPriceDescending)
+        }
+        let (newProducts, newLastDocument) = try await productsManager.getAllProducts(filter: filter, sorter: sorter, count: 10, lastDocument: lastDocument)
+        self.products.append(contentsOf: newProducts)
+        if let newLastDocument {
+            self.lastDocument = newLastDocument
         }
     }
+    
+    func getProductsCount() async throws {
+        let count = try await productsManager.getAllProductsCount()
+        print("ALL PRODUCT COUNT: \(count)")
+    }
+//    func getProductsByRating() async throws {
+//        let (newProducts, newLastDocument) = try await productsManager.getProductsByRating(count: 3, lastDocument: self.lastDocument)
+//        self.products.append(contentsOf: newProducts)
+//        self.lastDocument = newLastDocument
+//    }
     
 //    func downloadProductsAndUploadToFirebase() {
 //        let url = URL(string: "https://dummyjson.com/products")!
@@ -103,11 +128,23 @@ struct ProductsView: View {
         List {
             ForEach(viewModel.products) {
                 ProductCellView(product: $0)
+                if $0 == viewModel.products.last {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .frame(height: 120)
+                        .onAppear {
+                            guard  !viewModel.isFetchingProducts else { return }
+                            Task {
+                                try await viewModel.getProducts()
+                            }
+                        }
+                }
             }
         }
         .navigationTitle("Products")
         .task {
-            try? await viewModel.getAllProducts()
+            try? await viewModel.getProducts()
+            try? await viewModel.getProductsCount()
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {

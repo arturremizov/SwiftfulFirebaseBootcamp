@@ -11,6 +11,14 @@ import FirebaseFirestoreSwift
 
 final class ProductsManager: ObservableObject {
     
+    enum Filter {
+        case isEqualTo(field: String, value: Any)
+    }
+    
+    enum Sorter {
+        case order(by: String, descending: Bool)
+    }
+    
     private var encoder: Firestore.Encoder = {
         let encoder = Firestore.Encoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
@@ -26,28 +34,50 @@ final class ProductsManager: ObservableObject {
     private let productsCollection =  Firestore.firestore().collection("products")
 
     func upload(_ product: Product) async throws {
-        try productDocument(productId: String(product.id)).setData(from: product, merge: false, encoder: encoder)
+        try productDocument(productId: String(product.id))
+            .setData(from: product, merge: false, encoder: encoder)
     }
 
-    func getAllProducts() async throws -> [Product] {
-        return try await productsCollection.getDocuments(as: Product.self, decoder: decoder)
-    }
-    
-    func getAllProductsSortedByPrice(descending: Bool) async throws -> [Product] {
-        return try await productsCollection.order(by: "price", descending: descending)
+    func getAllProducts(filter: Filter? = nil, sorter: Sorter? = nil, count: Int, lastDocument: DocumentSnapshot?) async throws -> (documents: [Product], lastDocument: DocumentSnapshot?) {
+        var query: Query = productsCollection
+        if let filter {
+            switch filter {
+            case let .isEqualTo(field, value):
+                query = query.whereField(field, isEqualTo: value)
+            }
+        }
+        if let sorter {
+            switch sorter {
+            case let .order(by, descending):
+                query = query.order(by: by, descending: descending)
+            }
+        }
+        if let lastDocument {
+            query = query.start(afterDocument: lastDocument)
+        }
+        return try await query
+            .limit(to: count)
             .getDocuments(as: Product.self, decoder: decoder)
     }
     
-    func getAllProductsFor(category: String) async throws -> [Product] {
-        return try await productsCollection.whereField("category", isEqualTo: category)
-            .getDocuments(as: Product.self, decoder: decoder)
+    func getProductsByRating(count: Int, lastDocument: DocumentSnapshot?) async throws -> (documents: [Product], lastDocument: DocumentSnapshot?) {
+        var query = productsCollection
+            .order(by: "rating", descending: true)
+            .limit(to: count)
+        
+        if let lastDocument {
+            query = query.start(afterDocument: lastDocument)
+        }
+        
+        return try await query.getDocuments(as: Product.self, decoder: decoder)
     }
     
-    func getAllProductsSortedByPriceFor(category: String, descending: Bool) async throws -> [Product] {
-        return try await productsCollection
-            .whereField("category", isEqualTo: category)
-            .order(by: "price", descending: descending)
-            .getDocuments(as: Product.self, decoder: decoder)
+    func getAllProductsCount() async throws -> Int {
+        try await productsCollection
+            .count
+            .getAggregation(source: .server)
+            .count
+            .intValue
     }
     
     // MARK: - Helpers
@@ -58,7 +88,12 @@ final class ProductsManager: ObservableObject {
 
 extension Query {
     func getDocuments<T: Decodable>(as type: T.Type, decoder: Firestore.Decoder) async throws -> [T] {
+        return try await getDocuments(as: type, decoder: decoder).documents
+    }
+    
+    func getDocuments<T: Decodable>(as type: T.Type, decoder: Firestore.Decoder) async throws -> (documents: [T], lastDocument: DocumentSnapshot?) {
         let snapshot = try await getDocuments()
-        return try snapshot.documents.map { try $0.data(as: type, decoder: decoder) }
+        let documents = try snapshot.documents.map { try $0.data(as: type, decoder: decoder) }
+        return (documents, snapshot.documents.last)
     }
 }
