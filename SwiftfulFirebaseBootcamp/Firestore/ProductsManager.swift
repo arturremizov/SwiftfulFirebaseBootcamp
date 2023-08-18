@@ -13,6 +13,7 @@ final class ProductsManager: ObservableObject {
     
     enum Filter {
         case isEqualTo(field: String, value: Any)
+        case `in`(field: String, value: [Any])
     }
     
     enum Sorter {
@@ -38,12 +39,19 @@ final class ProductsManager: ObservableObject {
             .setData(from: product, merge: false, encoder: encoder)
     }
 
-    func getAllProducts(filter: Filter? = nil, sorter: Sorter? = nil, count: Int, lastDocument: DocumentSnapshot?) async throws -> (documents: [Product], lastDocument: DocumentSnapshot?) {
+    func getProduct(productId: String) async throws -> Product {
+        try await productDocument(productId: productId)
+            .getDocument(as: Product.self, decoder: decoder)
+    }
+    
+    func getAllProducts(filter: Filter? = nil, sorter: Sorter? = nil, count: Int, lastDocument: DocumentSnapshot? = nil) async throws -> (documents: [Product], lastDocument: DocumentSnapshot?) {
         var query: Query = productsCollection
         if let filter {
             switch filter {
             case let .isEqualTo(field, value):
                 query = query.whereField(field, isEqualTo: value)
+            case let .in(field, value):
+                query = query.whereField(field, in: value)
             }
         }
         if let sorter {

@@ -12,22 +12,11 @@ struct RootView: View {
     @State private var isShowingSignInView: Bool = false
     @EnvironmentObject private var authManager: AuthenticationManager
     @EnvironmentObject private var userManager: UserManager
-    @EnvironmentObject private var productsManager: ProductsManager
     
     var body: some View {
         ZStack {
             if !isShowingSignInView {
-                NavigationStack {
-                    
-                    ProductsView(
-                        viewModel: ProductsViewModel(productsManager: productsManager)
-                    )
-                    
-//                    ProfileView(
-//                        isShowingSignInView: $isShowingSignInView,
-//                        viewModel: ProfileViewModel(authManager: authManager, userManager: userManager)
-//                    )
-                }
+                TabbarView(isShowingSignInView: $isShowingSignInView)
             }
         }
         .onAppear {

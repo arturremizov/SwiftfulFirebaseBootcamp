@@ -14,6 +14,8 @@
 		AF1A2DB02A86765A00A6B906 /* SignInEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A2DAF2A86765A00A6B906 /* SignInEmailViewModel.swift */; };
 		AF1A2DB32A86769E00A6B906 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A2DB22A86769E00A6B906 /* ProfileView.swift */; };
 		AF1A2DB62A867AE300A6B906 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A2DB52A867AE300A6B906 /* UserManager.swift */; };
+		AF1C179C2A8E59DA00C9EFE0 /* TabbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1C179B2A8E59DA00C9EFE0 /* TabbarView.swift */; };
+		AF1C179F2A8E5CCE00C9EFE0 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1C179E2A8E5CCE00C9EFE0 /* FavoritesView.swift */; };
 		AF2D9C442A7E930D0004DC2A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = AF2D9C432A7E930D0004DC2A /* GoogleSignIn */; };
 		AF2D9C462A7E930D0004DC2A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AF2D9C452A7E930D0004DC2A /* GoogleSignInSwift */; };
 		AF2D9C4A2A7E96B10004DC2A /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2D9C492A7E96B10004DC2A /* UIApplication+Extensions.swift */; };
@@ -43,6 +45,8 @@
 		AF1A2DAF2A86765A00A6B906 /* SignInEmailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInEmailViewModel.swift; sourceTree = "<group>"; };
 		AF1A2DB22A86769E00A6B906 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		AF1A2DB52A867AE300A6B906 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
+		AF1C179B2A8E59DA00C9EFE0 /* TabbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabbarView.swift; sourceTree = "<group>"; };
+		AF1C179E2A8E5CCE00C9EFE0 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		AF2D9C472A7E93520004DC2A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AF2D9C492A7E96B10004DC2A /* UIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		AF2D9C4B2A7EA0340004DC2A /* SignInGoogleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInGoogleHelper.swift; sourceTree = "<group>"; };
@@ -86,9 +90,11 @@
 			isa = PBXGroup;
 			children = (
 				AF79DBD32A7C029800081627 /* RootView.swift */,
+				AF1C179A2A8E59B900C9EFE0 /* Tabbar */,
 				AF1A2DAB2A8675E300A6B906 /* Authentication */,
-				AF1A2DB12A86767400A6B906 /* Profile */,
 				AF519DAD2A8A6637006A8D23 /* Products */,
+				AF1C179D2A8E5C8E00C9EFE0 /* Favorites */,
+				AF1A2DB12A86767400A6B906 /* Profile */,
 				AF1A2DA82A86759300A6B906 /* Settings */,
 			);
 			path = Core;
@@ -137,6 +143,22 @@
 				AF519DB32A8A6A1B006A8D23 /* ProductsManager.swift */,
 			);
 			path = Firestore;
+			sourceTree = "<group>";
+		};
+		AF1C179A2A8E59B900C9EFE0 /* Tabbar */ = {
+			isa = PBXGroup;
+			children = (
+				AF1C179B2A8E59DA00C9EFE0 /* TabbarView.swift */,
+			);
+			path = Tabbar;
+			sourceTree = "<group>";
+		};
+		AF1C179D2A8E5C8E00C9EFE0 /* Favorites */ = {
+			isa = PBXGroup;
+			children = (
+				AF1C179E2A8E5CCE00C9EFE0 /* FavoritesView.swift */,
+			);
+			path = Favorites;
 			sourceTree = "<group>";
 		};
 		AF2D9C482A7E96960004DC2A /* Extensions */ = {
@@ -316,7 +338,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF1C179F2A8E5CCE00C9EFE0 /* FavoritesView.swift in Sources */,
 				AF519DB42A8A6A1B006A8D23 /* ProductsManager.swift in Sources */,
+				AF1C179C2A8E59DA00C9EFE0 /* TabbarView.swift in Sources */,
 				AF79DBD62A7C0FB700081627 /* SettingsView.swift in Sources */,
 				AF1A2DB32A86769E00A6B906 /* ProfileView.swift in Sources */,
 				AF1A2DB62A867AE300A6B906 /* UserManager.swift in Sources */,

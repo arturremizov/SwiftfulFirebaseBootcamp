@@ -48,6 +48,18 @@ struct AppUser: Codable {
     }
 }
 
+struct FavoriteProduct: Codable {
+    let id: String
+    let productId: Int
+    let dateCreated: Timestamp
+    
+    init(id: String, productId: Int, dateCreated: Timestamp = Timestamp()) {
+        self.id = id
+        self.productId = productId
+        self.dateCreated = dateCreated
+    }
+}
+
 final class UserManager: ObservableObject {
     
     private var encoder: Firestore.Encoder = {
@@ -104,8 +116,40 @@ final class UserManager: ObservableObject {
         try await userDocument(userId: userId).updateData(data as [AnyHashable : Any])
     }
     
+    func addUserFavoriteProduct(userId: String, productId: Int) async throws {
+        let document = userFavoriteProductCollection(userId: userId).document()
+        let favProduct = FavoriteProduct(id: document.documentID, productId: productId)
+        try document.setData(from: favProduct, merge: false, encoder: encoder)
+    }
+    
+    func removeUserFavoriteProduct(userId: String, favoriteProductId: String) async throws {
+        try await userFavoriteProductDocument(userId: userId, favoriteProductId: favoriteProductId).delete()
+    }
+    
+    func getAllUserFavoriteProducts(userId: String,
+                                    count: Int,
+                                    lastDocument: DocumentSnapshot?) async throws -> (documents: [FavoriteProduct], lastDocument: DocumentSnapshot?) {
+        
+        var query = userFavoriteProductCollection(userId: userId)
+            .limit(to: count)
+        if let lastDocument {
+            query = query.start(afterDocument: lastDocument)
+        }
+        return try await query.getDocuments(as: FavoriteProduct.self, decoder: decoder)
+    }
+    
     // MARK: - Helpers
     private func userDocument(userId: String) -> DocumentReference {
         return userCollection.document(userId)
+    }
+    
+    private func userFavoriteProductCollection(userId: String) -> CollectionReference {
+        return userDocument(userId: userId)
+            .collection("favorite_products")
+    }
+    
+    private func userFavoriteProductDocument(userId: String, favoriteProductId: String) -> DocumentReference {
+        return userFavoriteProductCollection(userId: userId)
+            .document(favoriteProductId)
     }
 }

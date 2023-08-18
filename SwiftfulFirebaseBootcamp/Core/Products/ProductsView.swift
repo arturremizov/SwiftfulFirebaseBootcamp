@@ -52,8 +52,13 @@ final class ProductsViewModel: ObservableObject {
     private(set) var isFetchingProducts: Bool = false
     
     private let productsManager: ProductsManager
-    init(productsManager: ProductsManager) {
+    private let userManager: UserManager
+    private let authManager: AuthenticationManager
+
+    init(productsManager: ProductsManager, userManager: UserManager, authManager: AuthenticationManager) {
         self.productsManager = productsManager
+        self.userManager = userManager
+        self.authManager = authManager
     }
     
     func getProducts() async throws {
@@ -97,6 +102,11 @@ final class ProductsViewModel: ObservableObject {
         let count = try await productsManager.getAllProductsCount()
         print("ALL PRODUCT COUNT: \(count)")
     }
+    
+    func addUserFavoriteProduct(productId: Int) async throws {
+        let authUser = try authManager.getAuthenticatedUser()
+        try await userManager.addUserFavoriteProduct(userId: authUser.uid, productId: productId)
+    }
 //    func getProductsByRating() async throws {
 //        let (newProducts, newLastDocument) = try await productsManager.getProductsByRating(count: 3, lastDocument: self.lastDocument)
 //        self.products.append(contentsOf: newProducts)
@@ -126,9 +136,21 @@ struct ProductsView: View {
     
     var body: some View {
         List {
-            ForEach(viewModel.products) {
-                ProductCellView(product: $0)
-                if $0 == viewModel.products.last {
+            ForEach(viewModel.products) { product in
+                ProductCellView(product: product)
+                    .contextMenu {
+                        Button {
+                            Task {
+                                try? await viewModel.addUserFavoriteProduct(productId: product.id)
+                            }
+                        } label: {
+                            HStack {
+                                Text("Add to favorites")
+                                Image(systemName: "star.fill")
+                            }
+                        }
+                    }
+                if product == viewModel.products.last {
                     ProgressView()
                         .frame(maxWidth: .infinity, alignment: .center)
                         .frame(height: 120)
@@ -177,7 +199,11 @@ struct ProductsView: View {
 struct ProductsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            ProductsView(viewModel: ProductsViewModel(productsManager: .init()))
+            ProductsView(
+                viewModel: ProductsViewModel(productsManager: .init(),
+                                             userManager: .init(),
+                                             authManager: .init())
+            )
         }
     }
 }
