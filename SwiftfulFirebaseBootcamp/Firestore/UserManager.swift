@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import Combine
 
 struct Movie: Codable {
     let id: String
@@ -136,6 +137,34 @@ final class UserManager: ObservableObject {
             query = query.start(afterDocument: lastDocument)
         }
         return try await query.getDocuments(as: FavoriteProduct.self, decoder: decoder)
+    }
+    
+    func addListenerForAllUserFavoriteProducts(userId: String) -> (publisher: AnyPublisher<[FavoriteProduct], Error>, listener: ListenerRegistration) {
+        let publisher = PassthroughSubject<[FavoriteProduct], Error>()
+        
+        let listener = userFavoriteProductCollection(userId: userId).addSnapshotListener { [weak self] snapshot, error in
+            guard let self else { return }
+            guard let documents = snapshot?.documents else {
+                print("No documents")
+                return
+            }
+            
+            snapshot?.documentChanges.forEach { change in
+                if (change.type == .added) {
+                    print("New products: \(change.document.data())")
+                }
+                if (change.type == .modified) {
+                    print("Modified products: \(change.document.data())")
+                }
+                if (change.type == .removed) {
+                    print("Removed products: \(change.document.data())")
+                }
+            }
+            
+            let favProducts = documents.compactMap { try? $0.data(as: FavoriteProduct.self, decoder: self.decoder) }
+            publisher.send(favProducts)
+        }
+        return (publisher.eraseToAnyPublisher(), listener)
     }
     
     // MARK: - Helpers
