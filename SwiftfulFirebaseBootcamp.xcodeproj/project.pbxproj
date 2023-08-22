@@ -26,6 +26,7 @@
 		AF519DB22A8A6913006A8D23 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF519DB12A8A6913006A8D23 /* Product.swift */; };
 		AF519DB42A8A6A1B006A8D23 /* ProductsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF519DB32A8A6A1B006A8D23 /* ProductsManager.swift */; };
 		AF519DB72A8A77B5006A8D23 /* ProductCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF519DB62A8A77B5006A8D23 /* ProductCellView.swift */; };
+		AF617F6F2A95015900E23AE1 /* SecurityRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF617F6E2A95015900E23AE1 /* SecurityRules.swift */; };
 		AF6ACB072A9253BC00AF6205 /* Query+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6ACB062A9253BC00AF6205 /* Query+Extensions.swift */; };
 		AF6ACB0C2A92540C00AF6205 /* OnFirstApprearViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6ACB0B2A92540C00AF6205 /* OnFirstApprearViewModifier.swift */; };
 		AF6ACB0E2A92543D00AF6205 /* FavoritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6ACB0D2A92543D00AF6205 /* FavoritesViewModel.swift */; };
@@ -57,6 +58,7 @@
 		AF519DB12A8A6913006A8D23 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		AF519DB32A8A6A1B006A8D23 /* ProductsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsManager.swift; sourceTree = "<group>"; };
 		AF519DB62A8A77B5006A8D23 /* ProductCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCellView.swift; sourceTree = "<group>"; };
+		AF617F6E2A95015900E23AE1 /* SecurityRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityRules.swift; sourceTree = "<group>"; };
 		AF6ACB062A9253BC00AF6205 /* Query+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Query+Extensions.swift"; sourceTree = "<group>"; };
 		AF6ACB0B2A92540C00AF6205 /* OnFirstApprearViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnFirstApprearViewModifier.swift; sourceTree = "<group>"; };
 		AF6ACB0D2A92543D00AF6205 /* FavoritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewModel.swift; sourceTree = "<group>"; };
@@ -198,6 +200,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		AF617F6D2A95014200E23AE1 /* SecurityRules */ = {
+			isa = PBXGroup;
+			children = (
+				AF617F6E2A95015900E23AE1 /* SecurityRules.swift */,
+			);
+			path = SecurityRules;
+			sourceTree = "<group>";
+		};
 		AF6ACB0A2A9253FD00AF6205 /* ViewModifiers */ = {
 			isa = PBXGroup;
 			children = (
@@ -233,6 +243,7 @@
 				AF519DB02A8A6903006A8D23 /* Models */,
 				AF6ACB0A2A9253FD00AF6205 /* ViewModifiers */,
 				AF2D9C482A7E96960004DC2A /* Extensions */,
+				AF617F6D2A95014200E23AE1 /* SecurityRules */,
 				AF79DBB82A7BF10A00081627 /* Assets.xcassets */,
 				AF338B452A812DFA001AB771 /* SwiftfulFirebaseBootcamp.entitlements */,
 				AF2D9C472A7E93520004DC2A /* Info.plist */,
@@ -358,6 +369,7 @@
 				AF1A2DB62A867AE300A6B906 /* UserManager.swift in Sources */,
 				AF79DBB52A7BF10800081627 /* SwiftfulFirebaseBootcampApp.swift in Sources */,
 				AF79DBD42A7C029800081627 /* RootView.swift in Sources */,
+				AF617F6F2A95015900E23AE1 /* SecurityRules.swift in Sources */,
 				AF2D9C4C2A7EA0340004DC2A /* SignInGoogleHelper.swift in Sources */,
 				AF1A2DAD2A86760100A6B906 /* AuthenticationViewModel.swift in Sources */,
 				AF1A2DB02A86765A00A6B906 /* SignInEmailViewModel.swift in Sources */,
