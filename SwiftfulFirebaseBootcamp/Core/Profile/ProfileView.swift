@@ -6,68 +6,14 @@
 //
 
 import SwiftUI
-
-@MainActor
-final class ProfileViewModel: ObservableObject {
-    
-    @Published private(set) var user: AppUser? = nil
-    let preferences: [String] = ["Sports", "Movies", "Books"]
-    
-    private let authManager: AuthenticationManager
-    private let userManager: UserManager
-    init(authManager: AuthenticationManager, userManager: UserManager) {
-        self.authManager = authManager
-        self.userManager = userManager
-    }
-    
-    func loadCurrentUser() async throws {
-        let authUser = try authManager.getAuthenticatedUser()
-        self.user = try await userManager.getUser(userId: authUser.uid)
-    }
-    
-    func togglePremiumStatus() async throws {
-        guard let user else { return }
-        let isPremium = user.isPremium ?? false
-        try await userManager.updateUserPremiumStatus(userId: user.userId, isPremium: !isPremium)
-        self.user = try await userManager.getUser(userId: user.userId)
-    }
-    
-    func addUserPreference(_ preference: String) async throws {
-        guard let user else { return }
-        try await userManager.addUserPreference(userId: user.userId, preference: preference)
-        self.user = try await userManager.getUser(userId: user.userId)
-    }
-    
-    func removeUserPreference(_ preference: String) async throws {
-        guard let user else { return }
-        try await userManager.removeUserPreference(userId: user.userId, preference: preference)
-        self.user = try await userManager.getUser(userId: user.userId)
-    }
-    
-    func addFavoriteMovie() async throws {
-        guard let user else { return }
-        let movie = Movie(id: "1", title: "Avatar 2", isPopular: true)
-        try await userManager.addFavoriteMovie(userId: user.userId, movie: movie)
-        self.user = try await userManager.getUser(userId: user.userId)
-    }
-    
-    func removeFavoriteMovie() async throws {
-        guard let user else { return }
-        try await userManager.removeFavoriteMovie(userId: user.userId)
-        self.user = try await userManager.getUser(userId: user.userId)
-    }
-    
-    func preferenceIsSelected(_ preference: String) -> Bool {
-        user?.preferences?.contains(preference) == true
-    }
-}
+import PhotosUI
 
 struct ProfileView: View {
     
     @Binding var isShowingSignInView: Bool
     @StateObject var viewModel: ProfileViewModel
     @EnvironmentObject private var authManager: AuthenticationManager
-
+    
     var body: some View {
         List {
             if let user = viewModel.user {
@@ -115,12 +61,56 @@ struct ProfileView: View {
                 } label: {
                     Text("Favorite Movie: \(user.favoriteMovie?.title ?? "")")
                 }
+                
+                PhotosPicker(
+                    selection: $viewModel.selectedPhotoItem,
+                    matching: .images,
+                    photoLibrary: .shared()) {
+                        Text("Select an image")
+                    }
+                
+                if let profileImageUrl = viewModel.user?.profileImageUrl, let url = URL(string: profileImageUrl) {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 150, height: 150)
+                            .cornerRadius(10, antialiased: true)
+                    } placeholder: {
+                        ProgressView()
+                            .frame(width: 150, height: 150)
+                    }
+                    
+                    if (viewModel.user?.profileImagePath) != nil {
+                        Button("Delete image", role: .destructive) {
+                            Task {
+                                try await viewModel.deleteProfileImage()
+                                try await viewModel.loadCurrentUser()
+                            }
+                        }
+                    }
+                }
             }
-            
         }
         .task {
-            try? await viewModel.loadCurrentUser()
+            do {
+                try await viewModel.loadCurrentUser()
+            } catch {
+                print(error.localizedDescription)
+            }
         }
+        .onChange(of: viewModel.selectedPhotoItem, perform: { newValue in
+            if let newValue {
+                Task {
+                    do {
+                        try await viewModel.saveProfileImage(item: newValue)
+                        try await viewModel.loadCurrentUser()
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+            }
+        })
         .navigationTitle("Profile")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -143,7 +133,7 @@ struct ProfileView_Previews: PreviewProvider {
         NavigationStack {
             ProfileView(
                 isShowingSignInView: .constant(false),
-                viewModel: ProfileViewModel(authManager: .init(), userManager: .init())
+                viewModel: ProfileViewModel(authManager: .init(), userManager: .init(), storageManager: .init())
             )
         }
         .environmentObject(AuthenticationManager())

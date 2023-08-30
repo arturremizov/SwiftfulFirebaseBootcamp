@@ -43,5 +43,6 @@ struct RootView_Previews: PreviewProvider {
             .environmentObject(AuthenticationManager())
             .environmentObject(UserManager())
             .environmentObject(ProductsManager())
+            .environmentObject(StorageManager())
     }
 }

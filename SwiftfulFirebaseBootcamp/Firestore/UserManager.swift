@@ -16,39 +16,6 @@ struct Movie: Codable {
     let isPopular: Bool
 }
 
-struct AppUser: Codable {
-    let userId: String
-    let isAnonymous: Bool
-    let email: String?
-    let photoUrl: String?
-    let dateCreated: Date
-    let isPremium: Bool?
-    let preferences: [String]?
-    let favoriteMovie: Movie?
-    
-    init(userId: String, isAnonymous: Bool, email: String? = nil, photoUrl: String? = nil, dateCreated: Date, isPremium: Bool? = nil, preferences: [String]? = nil, favoriteMovie: Movie? = nil) {
-        self.userId = userId
-        self.isAnonymous = isAnonymous
-        self.email = email
-        self.photoUrl = photoUrl
-        self.dateCreated = dateCreated
-        self.isPremium = isPremium
-        self.preferences = preferences
-        self.favoriteMovie = favoriteMovie
-    }
-    
-    init(authUser: AuthUser) {
-        self.userId = authUser.uid
-        self.isAnonymous = authUser.isAnonymous
-        self.email = authUser.email
-        self.photoUrl = authUser.photoUrl
-        self.dateCreated = Timestamp().dateValue()
-        self.isPremium = false
-        self.preferences = nil
-        self.favoriteMovie = nil
-    }
-}
-
 struct FavoriteProduct: Codable {
     let id: String
     let productId: Int
@@ -58,6 +25,21 @@ struct FavoriteProduct: Codable {
         self.id = id
         self.productId = productId
         self.dateCreated = dateCreated
+    }
+}
+
+extension AppUser {
+    init(authUser: AuthUser) {
+        self.userId = authUser.uid
+        self.isAnonymous = authUser.isAnonymous
+        self.email = authUser.email
+        self.photoUrl = authUser.photoUrl
+        self.dateCreated = Timestamp().dateValue()
+        self.isPremium = false
+        self.preferences = nil
+        self.favoriteMovie = nil
+        self.profileImagePath = nil
+        self.profileImageUrl = nil
     }
 }
 
@@ -87,6 +69,13 @@ final class UserManager: ObservableObject {
     
     func updateUserPremiumStatus(userId: String, isPremium: Bool) async throws {
         try await userDocument(userId: userId).updateData(["is_premium": isPremium])
+    }
+    
+    func updateUserProfileImage(userId: String, path: String?, url: String?) async throws {
+        try await userDocument(userId: userId).updateData([
+            "profile_image_path": path as Any,
+            "profile_image_url": url as Any
+        ])
     }
     
     func addUserPreference(userId: String, preference: String) async throws {

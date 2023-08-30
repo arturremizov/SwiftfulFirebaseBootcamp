@@ -13,7 +13,8 @@ struct TabbarView: View {
     @EnvironmentObject private var authManager: AuthenticationManager
     @EnvironmentObject private var userManager: UserManager
     @EnvironmentObject private var productsManager: ProductsManager
-    
+    @EnvironmentObject private var storageMnager: StorageManager
+
     var body: some View {
         TabView {
             NavigationStack {
@@ -43,7 +44,7 @@ struct TabbarView: View {
             NavigationStack {
                 ProfileView(
                     isShowingSignInView: $isShowingSignInView,
-                    viewModel: ProfileViewModel(authManager: authManager, userManager: userManager)
+                    viewModel: ProfileViewModel(authManager: authManager, userManager: userManager, storageManager: storageMnager)
                 )
             }
             .tabItem {
@@ -60,5 +61,6 @@ struct TabbarView_Previews: PreviewProvider {
             .environmentObject(AuthenticationManager())
             .environmentObject(UserManager())
             .environmentObject(ProductsManager())
+            .environmentObject(StorageManager())
     }
 }

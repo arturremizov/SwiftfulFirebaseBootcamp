@@ -17,6 +17,7 @@ struct SwiftfulFirebaseBootcampApp: App {
     @StateObject var authManager = AuthenticationManager()
     @StateObject var userManager = UserManager()
     @StateObject var productsManager = ProductsManager()
+    @StateObject var storageManager = StorageManager()
 
     var body: some Scene {
         WindowGroup {
@@ -24,6 +25,7 @@ struct SwiftfulFirebaseBootcampApp: App {
                 .environmentObject(authManager)
                 .environmentObject(userManager)
                 .environmentObject(productsManager)
+                .environmentObject(storageManager)
         }
     }
 }
