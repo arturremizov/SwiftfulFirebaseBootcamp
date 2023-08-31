@@ -21,11 +21,12 @@ struct SwiftfulFirebaseBootcampApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environmentObject(authManager)
-                .environmentObject(userManager)
-                .environmentObject(productsManager)
-                .environmentObject(storageManager)
+            CrashView()
+//            RootView()
+//                .environmentObject(authManager)
+//                .environmentObject(userManager)
+//                .environmentObject(productsManager)
+//                .environmentObject(storageManager)
         }
     }
 }

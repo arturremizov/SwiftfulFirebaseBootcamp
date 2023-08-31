@@ -42,6 +42,8 @@
 		AF79DBD22A7BFC5500081627 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF79DBD12A7BFC5500081627 /* AuthenticationManager.swift */; };
 		AF79DBD42A7C029800081627 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF79DBD32A7C029800081627 /* RootView.swift */; };
 		AF79DBD62A7C0FB700081627 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF79DBD52A7C0FB700081627 /* SettingsView.swift */; };
+		AF9BDB8D2AA0D39F00A6CFE4 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = AF9BDB8C2AA0D39F00A6CFE4 /* FirebaseCrashlytics */; };
+		AF9BDB912AA0D4B100A6CFE4 /* CrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9BDB902AA0D4B100A6CFE4 /* CrashView.swift */; };
 		AFB011A52A9F937300CE2D20 /* AppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB011A42A9F937300CE2D20 /* AppUser.swift */; };
 /* End PBXBuildFile section */
 
@@ -78,6 +80,7 @@
 		AF79DBD12A7BFC5500081627 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		AF79DBD32A7C029800081627 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		AF79DBD52A7C0FB700081627 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AF9BDB902AA0D4B100A6CFE4 /* CrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashView.swift; sourceTree = "<group>"; };
 		AFB011A42A9F937300CE2D20 /* AppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,6 +92,7 @@
 				AF123E0A2A910732001F1D7A /* FirebaseFirestoreSwift in Frameworks */,
 				AF336E702A91051C006FD4BE /* GoogleSignIn in Frameworks */,
 				AF123E082A910732001F1D7A /* FirebaseFirestore in Frameworks */,
+				AF9BDB8D2AA0D39F00A6CFE4 /* FirebaseCrashlytics in Frameworks */,
 				AF123E062A910732001F1D7A /* FirebaseAuth in Frameworks */,
 				AF336E722A91051C006FD4BE /* GoogleSignInSwift in Frameworks */,
 				AF1A1C3D2A9CD6AE00EA7B4C /* FirebaseStorage in Frameworks */,
@@ -263,6 +267,7 @@
 				AF6ACB0A2A9253FD00AF6205 /* ViewModifiers */,
 				AF2D9C482A7E96960004DC2A /* Extensions */,
 				AF617F6D2A95014200E23AE1 /* SecurityRules */,
+				AF9BDB8F2AA0D49100A6CFE4 /* Crashlytics */,
 				AF79DBB82A7BF10A00081627 /* Assets.xcassets */,
 				AF338B452A812DFA001AB771 /* SwiftfulFirebaseBootcamp.entitlements */,
 				AF2D9C472A7E93520004DC2A /* Info.plist */,
@@ -297,6 +302,14 @@
 			path = Authentication;
 			sourceTree = "<group>";
 		};
+		AF9BDB8F2AA0D49100A6CFE4 /* Crashlytics */ = {
+			isa = PBXGroup;
+			children = (
+				AF9BDB902AA0D4B100A6CFE4 /* CrashView.swift */,
+			);
+			path = Crashlytics;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -307,6 +320,7 @@
 				AF79DBAD2A7BF10800081627 /* Sources */,
 				AF79DBAE2A7BF10800081627 /* Frameworks */,
 				AF79DBAF2A7BF10800081627 /* Resources */,
+				AF9BDB8E2AA0D40800A6CFE4 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -320,6 +334,7 @@
 				AF123E072A910732001F1D7A /* FirebaseFirestore */,
 				AF123E092A910732001F1D7A /* FirebaseFirestoreSwift */,
 				AF1A1C3C2A9CD6AE00EA7B4C /* FirebaseStorage */,
+				AF9BDB8C2AA0D39F00A6CFE4 /* FirebaseCrashlytics */,
 			);
 			productName = SwiftfulFirebaseBootcamp;
 			productReference = AF79DBB12A7BF10800081627 /* SwiftfulFirebaseBootcamp.app */;
@@ -375,6 +390,31 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		AF9BDB8E2AA0D40800A6CFE4 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(BUILT_PRODUCTS_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		AF79DBAD2A7BF10800081627 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -402,6 +442,7 @@
 				AF519DB22A8A6913006A8D23 /* Product.swift in Sources */,
 				AF1A2DAA2A8675AC00A6B906 /* SettingsViewModel.swift in Sources */,
 				AF79DBD22A7BFC5500081627 /* AuthenticationManager.swift in Sources */,
+				AF9BDB912AA0D4B100A6CFE4 /* CrashView.swift in Sources */,
 				AF2D9C4A2A7E96B10004DC2A /* UIApplication+Extensions.swift in Sources */,
 				AF79DBD02A7BFA5100081627 /* SignInEmailView.swift in Sources */,
 				AF6ACB0E2A92543D00AF6205 /* FavoritesViewModel.swift in Sources */,
@@ -535,6 +576,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwiftfulFirebaseBootcamp/SwiftfulFirebaseBootcamp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"SwiftfulFirebaseBootcamp/Preview Content\"";
 				DEVELOPMENT_TEAM = 7B475922E3;
 				ENABLE_PREVIEWS = YES;
@@ -661,6 +703,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AF336E6E2A91051C006FD4BE /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
+		AF9BDB8C2AA0D39F00A6CFE4 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AF123E042A910732001F1D7A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
