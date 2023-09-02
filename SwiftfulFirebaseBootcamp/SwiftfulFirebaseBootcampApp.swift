@@ -21,7 +21,8 @@ struct SwiftfulFirebaseBootcampApp: App {
 
     var body: some Scene {
         WindowGroup {
-            PerformanceView()
+            AnalyticsView()
+//            PerformanceView()
 //            CrashView()
 //            RootView()
 //                .environmentObject(authManager)
